@@ -15,12 +15,14 @@ export default {
     authMethod() {
       // 因为如果用户来自扫描托管二维码，那么customerId就在路径参数里而不是Init.vue页面存储的
       auth(
-        Store.fetch("customerId") || getQueryString("customerId"),
+        // Store.fetch("customerId") || getQueryString("customerId"),
         getQueryString("code")
       )
         .then(res => {
+          console.log(res.data)
           // 拿到微信openid
-          Store.save("Ticket", res.data);
+          Store.save("Ticket", res.data.openId);
+          Store.save("userInfo", JSON.stringify(res.data));
           // 如果参数中有teamId，说明用户是扫设备组的托管二维码进来的，那么调用托管组接口
           if (getQueryString("teamId")) {
             this.trusteeTeam(getQueryString("teamId"), res.data);
@@ -34,7 +36,7 @@ export default {
             return;
           }
           this.$router.push({
-            path: "/list",
+            path: "/about",
             query: {
               customerId: Store.fetch("customerId")
             }

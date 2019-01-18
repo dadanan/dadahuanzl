@@ -9,7 +9,7 @@ import { getQueryString } from "utils";
 
 export default {
   created() {
-    const customerId = getQueryString("customerId");
+    const customerId = getQueryString("deveceNo");
     if (customerId) {
       Store.save("customerId", customerId);
       this.getAppId(customerId);
@@ -17,9 +17,7 @@ export default {
   },
   methods: {
     getAppId(id) {
-      appid({
-        value: id
-      }).then(res => {
+      appid().then(res => {
         // 用拿到appid，换微信code
         this.redireact(res.data);
       });

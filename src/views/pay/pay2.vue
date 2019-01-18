@@ -1,8 +1,11 @@
 <template>
   <div class="demo-container">
-    <!-- <button @click='buy(0.01)'>支付0.01元</button>
-    <button @click='buy(0.02)'>支付0.02元</button>
-    <button @click='buy(0.1)'>支付0.1元</button> -->
+    <div class="paysd">
+        <yd-cell-item>
+            <span slot="left">净享一天的健康呼吸</span>
+            <span slot="right"><img :src="measn.headimgurl"></span>
+        </yd-cell-item>
+    </div>
     <div class="pay">
         <div class="yuan">
             <ul>
@@ -14,10 +17,10 @@
         <div class="choose">
             <p>选择支付</p>
             <ul>
-                <li>￥余额支付</li>
+                <li><yd-icon name="verifycode" size="24px" color="#16AA6B"></yd-icon> 余额支付</li>
             </ul>
             <ul>
-                <li @click="buy">微信支付</li>
+                <li @click="buy"><yd-icon name="weixin" size="24px" color="#16AA6B"></yd-icon> 微信支付</li>
             </ul>
         </div>
     </div>
@@ -35,22 +38,36 @@ export default {
     data(){
         return {
         pays:Store.fetch("price"),
-        img:img1
+        img:img1,
+        measn:{}
         }  
     },
+    created () {
+        this.user()
+    },
   methods: {
+    user(){
+        var outTradeNos = JSON.parse(Store.fetch("userInfo"))
+        console.log(outTradeNos.userInfo.headimgurl)
+        this.measn = outTradeNos.userInfo
+    },
     buy() {
       const attach = JSON.stringify({
         test: "可以在这里带上任何附加信息"
       });
       getPayParams({
-        openId: Store.fetch("Ticket"), // openId
-        price: Store.fetch("price"), // 钱
-        orderBodyDesc: "订单主体描述test",
-        orderDetail: "订单详细描述test",
-        attach: attach
+        // openId: Store.fetch("Ticket"), // openId
+        // price: Store.fetch("price"), // 钱
+        // orderBodyDesc: "订单主体描述test",
+        // orderDetail: "订单详细描述test",
+        // attach: attach
+        deviceNo:Store.fetch("customerId"),
+        price:this.pays,
+        sourceType:1
       }).then(res => {
         res = res.data;
+        console.log()
+        Store.save("outTradeNo",JSON.stringify(res)),
         wxPay(
           res.appId,
           res.timeStamp,
@@ -61,7 +78,8 @@ export default {
           res.signature
         );
       });
-    }
+    },
+
   }
 };
 </script>
@@ -74,7 +92,7 @@ body{
 }
 .pay{
     width: 100%;
-    padding: 100px 0px 0px 0px;
+    padding: 40px 0px 0px 0px;
 }
 .yuan{
     width: 200px;
@@ -104,6 +122,23 @@ body{
         float: left;
         width: 50%;
         text-align: center;
+    }
+}
+.yd-cell-item:not(:last-child):after{
+    border: none;
+}
+.paysd{
+    width: 100%;
+    padding: 40px 0px 0px 0px;
+    color: #646464;
+    .yd-cell-left{
+        font-size: 12px !important;
+    }
+    img{
+        width:50px;
+        height:50px;
+        // background:#ccc;
+        border-radius:50%;
     }
 }
 </style>

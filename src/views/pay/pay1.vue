@@ -3,53 +3,19 @@
     <!-- <button @click='buy(0.01)'>支付0.01元</button>
     <button @click='buy(0.02)'>支付0.02元</button>
     <button @click='buy(0.1)'>支付0.1元</button> -->
-    <div class="cs">
-        <p>体验一下</p>
+    <div class="cs" v-for="item in list" :key="item.value">
+        <p>{{item.name}}</p>
         <div class="cs1">
             <ul>
-                <li style="font-size:50px">10</li>
+                <li style="font-size:50px">{{item.value}}</li>
                 <li>金额(元)</li>
             </ul>
             <ul>
-                <li style="font-size:50px">2</li>
+                <li style="font-size:50px">{{(item.time)/3600}}</li>
                 <li>时间(H)</li>
             </ul>
             <ul>
-                <li style="line-height: 6.6em;" @click="chuan(10)">点击进去 ></li>
-            </ul>
-            <div></div>
-        </div>
-    </div>
-    <div class="cs">
-        <p>逗留片刻</p>
-        <div class="cs1" style="background:#5ca9ef">
-            <ul>
-                <li style="font-size:50px">20</li>
-                <li>金额(元)</li>
-            </ul>
-            <ul>
-                <li style="font-size:50px">3</li>
-                <li>时间(H)</li>
-            </ul>
-            <ul>
-                <li style="line-height: 6.6em;" @click="chuan(20)">点击进去 ></li>
-            </ul>
-            <div></div>
-        </div>
-    </div>
-    <div class="cs">
-        <p>健康整天</p>
-        <div class="cs1" style="background:#f1973f">
-            <ul>
-                <li style="font-size:50px">30</li>
-                <li>金额(元)</li>
-            </ul>
-            <ul>
-                <li style="font-size:50px">12</li>
-                <li>时间(H)</li>
-            </ul>
-            <ul>
-                <li style="line-height: 6.6em;" @click="chuan(30)">点击进去 ></li>
+                <li style="line-height: 6.6em;" @click="chuan(item.value)">点击进去 ></li>
             </ul>
             <div></div>
         </div>
@@ -61,7 +27,7 @@
 </template>
 
 <script>
-import { getPayParams } from "../wenkong/api";
+import { getPayParams , productConfig } from "../wenkong/api";
 import Store from "../wenkong/store";
 import { wxPay } from "@/utils/wx.js";
 import { appid } from "../wenkong/api";
@@ -70,18 +36,24 @@ import img1 from "./assets/as.png"; // 图
 export default {
      data(){
         return {
-            img:img1
+            img:img1,
+            deviceId: Store.fetch("customerId"),
+            list:[]
         }  
     },
  created() {
-    const customerId = getQueryString("customerId");
-    if (customerId) {
-      Store.save("customerId", customerId);
-      this.getAppId(customerId);
-    }
+     this.productConfig()
   },
   methods: {
+    productConfig(){
+    // const deviceId = getQueryString("pay")
+        productConfig(this.deviceId).then(res=>{
+            console.log(res.data)
+            this.list = res.data
+        })
+    },
     chuan(val) {
+      console.log(val)
       Store.save("price", val);
       this.$router.push({
         path: "/pay2",
@@ -91,29 +63,30 @@ export default {
       });
     },
     
-    buy(price) {
-      const attach = JSON.stringify({
-        test: "可以在这里带上任何附加信息"
-      });
-      getPayParams({
-        openId: Store.fetch("Ticket"), // openId
-        price: price, // 钱
-        orderBodyDesc: "订单主体描述test",
-        orderDetail: "订单详细描述test",
-        attach: attach
-      }).then(res => {
-        res = res.data;
-        wxPay(
-          res.appId,
-          res.timeStamp,
-          res.nonceStr,
-          res.package1,
-          res.signType,
-          res.paySign,
-          res.signature
-        );
-      });
-    }
+    // buy(price) {
+    //  Store.save("price", val);
+    //   const attach = JSON.stringify({
+    //     test: "可以在这里带上任何附加信息"
+    //   });
+    //   getPayParams({
+    //     openId: Store.fetch("Ticket"), // openId
+    //     price: price, // 钱
+    //     orderBodyDesc: "订单主体描述test",
+    //     orderDetail: "订单详细描述test",
+    //     attach: attach
+    //   }).then(res => {
+    //     res = res.data;
+    //     wxPay(
+    //       res.appId,
+    //       res.timeStamp,
+    //       res.nonceStr,
+    //       res.package1,
+    //       res.signType,
+    //       res.paySign,
+    //       res.signature
+    //     );
+    //   });
+    // }
   }
 };
 </script>

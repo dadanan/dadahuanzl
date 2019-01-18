@@ -8,9 +8,10 @@ import baseUrl from 'config/env'
 import { returnUrl } from 'utils'
 import Toast from 'base/toast'
 import md5 from 'js-md5'
+import Store from "@/views/wenkong/store";
 import Vue from 'vue'
 import global_ from 'common/js/global'
-import { getSign } from '@/views/wenkong/api'
+import { getSign , queryResult } from '@/views/wenkong/api'
 
 Vue.use(Toast)
 
@@ -201,7 +202,7 @@ export function openMap(city, address, lat, lng) {
  * @param signType 微信签名方式
  * @param paySign 微信签名
  * @param signature
- * @author shuiRong
+ * @author zhang
  */
 export function wxPay(
   appId,
@@ -230,9 +231,20 @@ export function wxPay(
       package: packageArg,
       signType: signType,
       paySign: paySign,
-      success: function(res) {
-        console.log('success:', res)
-      }
+      success : function(res) {
+        if (res.errMsg == "chooseWXPay:ok") {
+          Vue.prototype.$toast('支付成功', 'bottom')
+          window.location.href="http://zulintest.hcocloud.com/h5/pays"
+          } else {       
+            Vue.prototype.$toast(error.errMsg, 'bottom')
+          }      
+        },
+        cancel : function(res) {   
+          Vue.prototype.$toast('支付取消', 'bottom')  
+        },   
+        fail : function(res) {   
+          Vue.prototype.$toast('支付失败', 'bottom')   
+        }   
     })
   })
 }

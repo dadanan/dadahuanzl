@@ -18,7 +18,9 @@ import global_ from 'common/js/global'
 import Store from '@/views/wenkong/store'
 import 'common/iconfont/iconfont.css'
 import VueAMap from 'vue-amap'
+import YDUI from 'vue-ydui';
 Vue.use(VueAMap)
+Vue.use(YDUI);
 VueAMap.initAMapApiLoader({
   key: 'f2454e29fd7b50f0190389a2f03f100a',
   plugin: [

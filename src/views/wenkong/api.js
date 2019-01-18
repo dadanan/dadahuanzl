@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV === 'development'
-    ? 'http://pro.hcocloud.com'
+    ? 'http://zulintest.hcocloud.com'
     : window.location.origin
 import { http } from '@/common/js/https'
 import Store from './store'
@@ -255,13 +255,13 @@ export function appid(data) {
   return http({
     url: `${BASE_URL}/api/h5/api/user/appid`,
     method: 'post',
-    data
+    // data
   })
 }
 
-export function auth(customerId, code) {
+export function auth(code) {
   return http({
-    url: `${BASE_URL}/api/h5/api/user/auth?customerId=${customerId}&code=${code}`,
+    url: `${BASE_URL}/api/h5/api/user/auth?code=${code}`,
     method: 'get'
   })
 }
@@ -487,10 +487,10 @@ export function trusteeTeam(data) {
 // 微信支付获取支付参数
 export function getPayParams(data) {
   return http({
-    url: `${BASE_URL}/api/h5/pay/pay`,
+    url: `${BASE_URL}/api/h5/device/rent`,
     method: 'post',
     data,
-    headers: { Ticket: Store.fetch('Ticket') }
+    headers: { Ticket: Store.fetch('Ticket')}
   })
 }
 
@@ -522,5 +522,41 @@ export function setLinkStatus(data) {
     method: 'post',
     data,
     headers: { Ticket: Store.fetch('Ticket') }
+  })
+}
+
+
+// 租赁开始
+export function productConfig(data) {
+  return http({
+    url: `${BASE_URL}/api/h5/device/productConfig/${data}`,
+    method: 'post',
+    headers: { Ticket: Store.fetch('Ticket') }
+  })
+}
+
+// 微信支付结果查询
+export function queryResult(data) {
+  return http({
+    url: `${BASE_URL}/api/h5/pay/queryResult`,
+    method: 'post',
+    data,
+    headers: { Ticket: Store.fetch('Ticket') }
+  })
+}
+// 注册
+export function h5Register(data) {
+  return http({
+    url: '/temp/manage/user/h5Register',
+    method: 'post',
+    data
+  })
+}
+// 登录
+export function login(data) {
+  return http({
+    url: '/temp/manage/user/login',
+    method: 'post',
+    data
   })
 }
